@@ -378,3 +378,17 @@ html.night {
 html.night .sky::before { opacity: 1; }
 @media (max-width: 1000px) { .sky::after { opacity: 1; } }
 html.day .sky::before { opacity: 0; }
+
+/* --- Smooth the foreground gradient buildings -------------------- */
+/* Their gradient bodies can't transition color, so we transition a
+   filter on the whole foreground layer instead. In day: no filter.
+   In night: darken + desaturate, which reads as the grey night look
+   and fades smoothly over the same 2.5s. */
+@media (prefers-reduced-motion: no-preference) {
+  .foreground-buildings { transition: filter 2.5s ease; }
+}
+html.night .foreground-buildings { filter: brightness(0.32) saturate(0.25); }
+@media (max-width: 1000px) {
+  .foreground-buildings { filter: brightness(0.32) saturate(0.25); }
+}
+html.day .foreground-buildings { filter: none; }
