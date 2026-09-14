@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">    
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>City Skyline</title>
     <link href="css/styles.css?v=2" rel="stylesheet" />
     <script>
       (function () {
-        var scene = new URLSearchParams(location.search).get('scene');
-        if (scene === 'day' || scene === 'night') {
+        // If a scene is set in the URL, honor it and skip auto-cycling.
+        var urlScene = new URLSearchParams(location.search).get('scene');
+
+        function apply(scene) {
+          document.documentElement.classList.remove('day', 'night');
           document.documentElement.classList.add(scene);
         }
+
+        if (urlScene === 'day' || urlScene === 'night') {
+          apply(urlScene);
+          return;
+        }
+
+        // Otherwise auto-cycle: start on day, flip every 5 seconds.
+        var scene = 'day';
+        apply(scene);
+        setInterval(function () {
+          scene = (scene === 'day') ? 'night' : 'day';
+          apply(scene);
+        }, 5000);
       })();
     </script>
   </head>
