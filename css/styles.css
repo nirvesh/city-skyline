@@ -297,39 +297,37 @@ body {
     );
 }
 
-@media (max-width: 1000px) {
-  :root {
-    --building-color1: #000;
-    --building-color2: #000;
-    --building-color3: #000;
-    --building-color4: #000;
-    --window-color1: #777;
-    --window-color2: #777; 
-    --window-color3: #777; 
-    --window-color4: #777;     
-  }
+/* ============================================================
+   Two-copy cross-fade: a permanent day scene and a permanent
+   night scene stacked on top of each other. We fade opacity
+   between them, so nothing ever snaps (opacity always animates).
+   ============================================================ */
 
-  /* night sky handled by fading .sky::after, not here */
+.scene-stack {
+  position: relative;
+  width: 100%;
+  height: 100vh;
 }
 
-/* --- Forced scenes for embedding (?scene=day / ?scene=night) --- */
-html.day {
-  --building-color1: #aa80ff;
-  --building-color2: #66cc99;
-  --building-color3: #cc6699;
-  --building-color4: #538cc6;
-  --window-color1: #bb99ff;
-  --window-color2: #8cd9b3;
-  --window-color3: #d98cb3;
-  --window-color4: #8cb3d9;
+.scene {
+  position: absolute;
+  inset: 0;
 }
-html.day .sky {
-  background: radial-gradient(
-      closest-corner circle at 15% 15%,
-      #ffcf33, #ffcf33 20%, #ffff66 21%, #bbeeff 100%
-    );
+
+/* Fade between the two copies */
+@media (prefers-reduced-motion: no-preference) {
+  .scene { transition: opacity 2.5s ease; }
 }
-html.night {
+
+.scene-night { opacity: 0; }              /* start hidden; day shows through */
+
+html.show-night .scene-day   { opacity: 0; }
+html.show-night .scene-night { opacity: 1; }
+html.show-day   .scene-day   { opacity: 1; }
+html.show-day   .scene-night { opacity: 0; }
+
+/* --- Night palette, scoped to the night copy only --- */
+.scene-night {
   --building-color1: #000;
   --building-color2: #000;
   --building-color3: #000;
@@ -339,57 +337,10 @@ html.night {
   --window-color3: #777;
   --window-color4: #777;
 }
-/* html.night sky handled by fading .sky::after */
 
-/* --- Smooth day/night fade -------------------------------------- */
-@media (prefers-reduced-motion: no-preference) {
-  [class*="bb"],
-  [class*="fb"] {
-    transition: background 2.5s ease, background-color 2.5s ease,
-                border-color 2.5s ease;
-  }
-}
-
-/* .sky always shows the DAY gradient (from the base rule above).
-   A night layer is stacked on top and faded in/out via opacity. */
-.sky { position: relative; }
-
-.sky::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;                  /* above the day gradient, below the buildings */
-  pointer-events: none;
-  opacity: 0;                  /* hidden by day */
+.scene-night .sky {
   background: radial-gradient(
       closest-corner circle at 15% 15%,
       #ccc, #ccc 20%, #445 21%, #223 100%
     );
 }
-
-/* keep the building children painting above the night layer */
-.background-buildings > * { position: relative; z-index: 1; }
-
-@media (prefers-reduced-motion: no-preference) {
-  .sky::before { transition: opacity 2.5s ease; }
-}
-
-/* Reveal night layer when night is active (class or narrow width). */
-html.night .sky::before { opacity: 1; }
-@media (max-width: 1000px) { .sky::after { opacity: 1; } }
-html.day .sky::before { opacity: 0; }
-
-/* --- Smooth the foreground gradient buildings -------------------- */
-/* Their gradient bodies can't transition color, so we transition a
-   filter on the whole foreground layer instead. In day: no filter.
-   In night: darken + desaturate, which reads as the grey night look
-   and fades smoothly over the same 2.5s. */
-.foreground-buildings { filter: brightness(1) saturate(1); }
-@media (prefers-reduced-motion: no-preference) {
-  .foreground-buildings { transition: filter 2.5s ease; }
-}
-html.night .foreground-buildings { filter: brightness(0.32) saturate(0.25); }
-@media (max-width: 1000px) {
-  .foreground-buildings { filter: brightness(0.32) saturate(0.25); }
-}
-html.day .foreground-buildings { filter: brightness(1) saturate(1); }
