@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>City Skyline</title>
-    <link href="css/styles.css?v=2" rel="stylesheet" />
+    <link href="css/styles.css?v=3" rel="stylesheet" />
     <script>
       (function () {
         // If a scene is set in the URL, honor it and skip auto-cycling.
@@ -25,7 +25,7 @@
         setInterval(function () {
           scene = (scene === 'day') ? 'night' : 'day';
           apply(scene);
-        }, 5000);
+        }, 10000);
       })();
     </script>
   </head>
