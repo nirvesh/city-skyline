@@ -353,3 +353,12 @@ html.night .sky {
       #ccc, #ccc 20%, #445 21%, #223 100%
     );
 }
+
+/* --- Smooth fade for the auto-cycle day/night transition --- */
+@media (prefers-reduced-motion: no-preference) {
+  .sky,
+  [class*="bb"],
+  [class*="fb"] {
+    transition: background 1.2s ease, background-color 1.2s ease, border-color 1.2s ease;
+  }
+}
