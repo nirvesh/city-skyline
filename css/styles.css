@@ -354,11 +354,42 @@ html.night .sky {
     );
 }
 
-/* --- Smooth fade for the auto-cycle day/night transition --- */
+/* --- Smooth day/night fade -------------------------------------- */
+/* Buildings use background-color, which CAN transition. */
 @media (prefers-reduced-motion: no-preference) {
-  .sky,
   [class*="bb"],
   [class*="fb"] {
-    transition: background 2.5s ease, background-color 2.5s ease, border-color 2.5s ease;
+    transition: background 2.5s ease, background-color 2.5s ease,
+                border-color 2.5s ease;
   }
 }
+
+/* The sky is a gradient, which CANNOT transition directly.
+   So we layer a night sky over the day sky and fade its opacity. */
+.sky {
+  position: relative;
+}
+
+.sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;                 /* sit behind the buildings */
+  opacity: 0;                  /* day by default: night layer hidden */
+  background: radial-gradient(
+      closest-corner circle at 15% 15%,
+      #ccc, #ccc 20%, #445 21%, #223 100%
+    );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sky::after { transition: opacity 2.5s ease; }
+}
+
+/* When night is active (via class or width), reveal the night layer. */
+html.night .sky::after { opacity: 1; }
+
+@media (max-width: 1000px) {
+  .sky::after { opacity: 1; }
+}
+html.day .sky::after { opacity: 0; }
