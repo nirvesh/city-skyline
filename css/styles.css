@@ -309,15 +309,7 @@ body {
     --window-color4: #777;     
   }
 
-  .sky {
-    background: radial-gradient(
-        closest-corner circle at 15% 15%,
-        #ccc,
-        #ccc 20%,
-        #445 21%,
-        #223 100%
-      );
-  }
+  /* night sky handled by fading .sky::after, not here */
 }
 
 /* --- Forced scenes for embedding (?scene=day / ?scene=night) --- */
@@ -347,15 +339,9 @@ html.night {
   --window-color3: #777;
   --window-color4: #777;
 }
-html.night .sky {
-  background: radial-gradient(
-      closest-corner circle at 15% 15%,
-      #ccc, #ccc 20%, #445 21%, #223 100%
-    );
-}
+/* html.night sky handled by fading .sky::after */
 
 /* --- Smooth day/night fade -------------------------------------- */
-/* Buildings use background-color, which CAN transition. */
 @media (prefers-reduced-motion: no-preference) {
   [class*="bb"],
   [class*="fb"] {
@@ -364,18 +350,16 @@ html.night .sky {
   }
 }
 
-/* The sky is a gradient, which CANNOT transition directly.
-   So we layer a night sky over the day sky and fade its opacity. */
-.sky {
-  position: relative;
-}
+/* .sky always shows the DAY gradient (from the base rule above).
+   A night layer is stacked on top and faded in/out via opacity. */
+.sky { position: relative; }
 
 .sky::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;                 /* sit behind the buildings */
-  opacity: 0;                  /* day by default: night layer hidden */
+  z-index: -1;                 /* behind the buildings */
+  opacity: 0;                  /* hidden by day */
   background: radial-gradient(
       closest-corner circle at 15% 15%,
       #ccc, #ccc 20%, #445 21%, #223 100%
@@ -386,10 +370,7 @@ html.night .sky {
   .sky::after { transition: opacity 2.5s ease; }
 }
 
-/* When night is active (via class or width), reveal the night layer. */
+/* Reveal night layer when night is active (class or narrow width). */
 html.night .sky::after { opacity: 1; }
-
-@media (max-width: 1000px) {
-  .sky::after { opacity: 1; }
-}
+@media (max-width: 1000px) { .sky::after { opacity: 1; } }
 html.day .sky::after { opacity: 0; }
