@@ -354,11 +354,12 @@ html.night {
    A night layer is stacked on top and faded in/out via opacity. */
 .sky { position: relative; }
 
-.sky::after {
+.sky::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;                 /* behind the buildings */
+  z-index: 0;                  /* above the day gradient, below the buildings */
+  pointer-events: none;
   opacity: 0;                  /* hidden by day */
   background: radial-gradient(
       closest-corner circle at 15% 15%,
@@ -366,11 +367,14 @@ html.night {
     );
 }
 
+/* keep the building children painting above the night layer */
+.background-buildings > * { position: relative; z-index: 1; }
+
 @media (prefers-reduced-motion: no-preference) {
-  .sky::after { transition: opacity 2.5s ease; }
+  .sky::before { transition: opacity 2.5s ease; }
 }
 
 /* Reveal night layer when night is active (class or narrow width). */
-html.night .sky::after { opacity: 1; }
+html.night .sky::before { opacity: 1; }
 @media (max-width: 1000px) { .sky::after { opacity: 1; } }
-html.day .sky::after { opacity: 0; }
+html.day .sky::before { opacity: 0; }
